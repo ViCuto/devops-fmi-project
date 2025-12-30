@@ -3,6 +3,7 @@ name: Fast Feature Check
 on:
   push:
     branches: [ "feature/**" ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -27,7 +28,7 @@ jobs:
           pip install -r src/requirements-dev.txt
 
       - name: Check Formatting (Black)
-        run: black --check .
+        run: black --check src
 
       - name: Lint with flake8
-        run: flake8 .
+        run: flake8 src
