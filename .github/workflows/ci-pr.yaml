@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ "dev", "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          pip install -r src/requirements-dev.txt
+          pip install -r src/requirements.txt
+
+      - name: Check Formatting (Black)
+        run: black --check src
+
+      - name: Lint with flake8
+        run: flake8 src
+      
+      - name: Security Check (Bandit)
+        run: bandit -r src -ll
+
+      - name: Run Unit Tests
+        env:
+          PYTHONPATH: src
+        run: pytest
+
+  sast-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+          
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  container-security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build an image from Dockerfile
+        run: docker build -t test-image:${{ github.sha }} .
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: 'test-image:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
