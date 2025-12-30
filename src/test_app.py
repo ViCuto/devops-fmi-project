@@ -2,6 +2,7 @@
 Module for testing the Flask application.
 This module uses unittest to verify that the web server works correctly.
 """
+
 import unittest
 from app import app, GREETINGS
 
