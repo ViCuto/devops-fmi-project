@@ -1,0 +1,42 @@
+name: CD
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:  
+
+jobs:
+  deploy-production:
+    runs-on: self-hosted
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: vicuto/greeting-app:latest
+
+      - name: Deploy to Kubernetes
+        run: |
+          echo "Starting Deployment..."
+          kubectl apply -f k8s/namespace.yaml
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          
+          echo "Restarting Deployment to pull new image..."
+          kubectl rollout restart deployment greeting-app-deployment -n greeting-app
+          
+          echo "Waiting for rollout to finish..."
+          kubectl rollout status deployment/greeting-app-deployment -n greeting-app --timeout=60s
+
+          echo "DEPLOYMENT SUCCESSFUL!"
