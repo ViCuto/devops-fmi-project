@@ -93,3 +93,14 @@ The project uses **GitHub Actions** to automate testing, security checks, and de
     * **Build & Push:** Builds the Docker image and pushes it to Docker Hub with version tags (`sha` and `latest`).
     * **Deploy:** Connects to the Kubernetes cluster and applies the manifests.
     * **Zero-Downtime:** Triggers a rolling update (`kubectl rollout restart`) to gracefully replace old pods with new ones without interrupting service.
+
+ ## Kubernetes Deployment
+
+The application runs on a Kubernetes cluster with a configuration designed for high availability, isolation, and stability.
+
+* **Namespace Isolation:** The application is deployed in a dedicated namespace (`greeting-app`) to ensure logical separation from other cluster resources.
+* **Resource Management:** We defined specific **CPU and Memory limits** (Requests: 50m/64Mi, Limits: 250m/128Mi). This prevents the container from consuming excessive cluster resources and ensures predictable performance.
+* **Self-Healing:** The deployment includes **Liveness and Readiness Probes**.
+    * *Liveness:* Restarts the container if the application crashes/deadlocks.
+    * *Readiness:* Stops traffic to the pod if it's not ready to accept requests.
+* **Networking & Scaling:** The app is scaled to **2 replicas** for high availability. External access is provided by a **LoadBalancer** on port 80, which routes traffic to the container port 5000.
