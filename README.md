@@ -30,44 +30,22 @@ To ensure stability, we enforce **Protection Rules** on both `dev` and `main` br
 * **Pull Request Flow:** Direct commits are disabled to ensure all code is reviewed.
 
 ### 3. Workflow Diagram
-The diagram below shows the linear flow of code from development to production.
+The workflow travels linearly from development to deployment.
 
 ```mermaid
-flowchart TD
-    %% Nodes
-    Dev[Developer Work]
-    Feature[Branch: feature/**]
+flowchart LR
+    %% Layout: Left-to-Right makes it wider but much shorter (smaller look)
+    Dev[Dev Work] --> Feat[Feature/**]
+    Feat -.-> Lint(Lint Check)
     
-    subgraph Integration [Integration Phase]
-        PR_Dev[Pull Request to 'dev']
-        CI_Dev[CI Pipeline: ci-pr.yaml]
-        Merge_Dev[Merge to 'dev']
-    end
-
-    subgraph Production [Production Phase]
-        PR_Main[Pull Request to 'main']
-        CI_Main[CI Pipeline: ci-pr.yaml]
-        Merge_Main[Merge to 'main']
-    end
+    Feat --> PR1[PR: dev]
+    PR1 --> CI1{CI Check}
+    CI1 -- Pass --> M1[Merge: dev]
+    CI1 -- Fail --> X1[Block]
     
-    subgraph Deployment [Deployment Phase]
-        CD[CD Pipeline: cd.yaml]
-        K8s[Kubernetes Cluster]
-    end
-
-    %% Connections
-    Dev -->|Push Code| Feature
-    Feature -.->|Trigger| Lint[Linter: feature-lint.yaml]
+    M1 --> PR2[PR: main]
+    PR2 --> CI2{CI Check}
+    CI2 -- Pass --> M2[Merge: main]
+    CI2 -- Fail --> X2[Block]
     
-    Feature --> PR_Dev
-    PR_Dev --> CI_Dev
-    CI_Dev -->|Pass| Merge_Dev
-    CI_Dev -->|Fail| Block1[❌ Block Merge]
-    
-    Merge_Dev --> PR_Main
-    PR_Main --> CI_Main
-    CI_Main -->|Pass| Merge_Main
-    CI_Main -->|Fail| Block2[❌ Block Merge]
-    
-    Merge_Main -->|Trigger| CD
-    CD -->|Rolling Update| K8s
+    M2 --> CD[Deploy] --> K8s(K8s Cluster)
