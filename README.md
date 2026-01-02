@@ -66,3 +66,32 @@ The application is containerized using Docker with a focus on security and build
 * **Layer Caching:** `requirements.txt` is copied and installed *before* the source code to leverage Docker layer caching and speed up builds.
 ### Build Optimization
 * **Layer Caching:** The build process is optimized to use Docker's layer caching mechanism. The `requirements.txt` file is copied and installed before the application source code. This ensures that dependencies are cached and not re-installed on every build unless the requirements actually change.
+
+## CI/CD Pipeline
+
+The project uses **GitHub Actions** to automate testing, security checks, and deployment. The pipeline is split into three distinct workflows to optimize feedback time and resource usage.
+
+### 1. Developer Feedback (`feature-lint.yaml`)
+* **Trigger:** Push to any `feature/**` branch.
+* **Purpose:** Provides immediate feedback on code style, allowing developers to fix simple issues fast.
+* **Steps:**
+    * **Formatting:** Runs `Black` to check code style.
+    * **Linting:** Runs `Flake8` to catch syntax errors.
+
+### 2. Quality & Security Gate (`ci-pr.yaml`)
+* **Trigger:** Pull Request to `dev` or `main`.
+* **Purpose:** Ensures code quality and security before merging. If any step fails, the merge is blocked.
+* **Steps:**
+    * **Code Quality:** Re-runs `Black` and `Flake8` to enforce standards.
+    * **Unit Testing:** Runs `pytest` to verify application logic.
+    * **SAST (Python):** Uses **Bandit** to scan for Python-specific security issues (e.g., hardcoded secrets).
+    * **Advanced Security:** Runs **GitHub CodeQL** for semantic code analysis.
+    * **Container Security:** Builds the image and runs **Trivy** to scan for Critical/High vulnerabilities in the OS and libraries.
+
+### 3. Production Deployment (`cd.yaml`)
+* **Trigger:** Successful merge to `main`.
+* **Purpose:** Deploys the new version to production with zero downtime.
+* **Steps:**
+    * **Build & Push:** Builds the Docker image and pushes it to Docker Hub with version tags (`sha` and `latest`).
+    * **Deploy:** Connects to the Kubernetes cluster and applies the manifests.
+    * **Zero-Downtime:** Triggers a rolling update (`kubectl rollout restart`) to gracefully replace old pods with new ones without interrupting service.
