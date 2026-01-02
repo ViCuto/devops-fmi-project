@@ -49,3 +49,20 @@ flowchart LR
     CI2 -- Fail --> X2[Block]
     
     M2 --> CD[Deploy] --> K8s(K8s Cluster)
+```
+## Docker Configuration
+
+The application is containerized using Docker with a focus on security and build performance.
+
+### Security Implementation
+* **Minimal Base Image:** We use the `python:3.14-slim` image. This significantly reduces the container size and minimizes the attack surface by excluding unnecessary system tools.
+* **Non-Root Execution:** For security reasons, the application does not run as the root user. The Dockerfile creates a dedicated user named `appuser` and switches to it, preventing potential privilege escalation attacks.
+
+### Dependency Management & Caching
+* **Separation of Concerns:** Dependencies are split into two files:
+    * `requirements.txt`: Only production libraries (Flask, Jinja2).
+    * `requirements-dev.txt`: Testing and linting tools (pytest, flake8, black, bandit).
+    * *Benefit:* The final Docker image installs **only** production dependencies, keeping the artifact lightweight and clean.
+* **Layer Caching:** `requirements.txt` is copied and installed *before* the source code to leverage Docker layer caching and speed up builds.
+### Build Optimization
+* **Layer Caching:** The build process is optimized to use Docker's layer caching mechanism. The `requirements.txt` file is copied and installed before the application source code. This ensures that dependencies are cached and not re-installed on every build unless the requirements actually change.
