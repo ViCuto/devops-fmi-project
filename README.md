@@ -104,3 +104,66 @@ The application runs on a Kubernetes cluster with a configuration designed for h
     * *Liveness:* Restarts the container if the application crashes/deadlocks.
     * *Readiness:* Stops traffic to the pod if it's not ready to accept requests.
 * **Networking & Scaling:** The app is scaled to **2 replicas** for high availability. External access is provided by a **LoadBalancer** on port 80, which routes traffic to the container port 5000.
+
+## Technologies Used
+
+| Category | Technology |
+|----------|------------|
+| **Core Framework** | Python 3.14, Flask |
+| **CI/CD Automation** | GitHub Actions |
+| **Containerization** | Docker, Docker Hub |
+| **Orchestration** | Kubernetes (Deployment, Service) |
+| **Security (SAST)** | Bandit, CodeQL |
+| **Container Security** | Trivy (Vulnerability Scanner) |
+| **Quality Assurance** | Pytest (Unit Tests), Black, Flake8 |
+
+## How to Run
+
+### 1. Running from Source
+To run the application manually without Docker:
+
+**Create & Activate Virtual Environment**
+* **Windows:**
+    ```bash
+    python -m venv venv
+    .\venv\Scripts\activate
+    ```
+* **Linux / macOS:**
+    ```bash
+    python -m venv venv
+    source venv/bin/activate
+    ```
+
+**Install Dependencies**
+```bash
+pip install -r src/requirements.txt
+```
+
+**Start Application**
+```bash
+python src/app.py
+```
+
+### 2. Local Testing (Docker)
+To run the application in an isolated container:
+
+```bash
+# Build the Docker image
+docker build -t greeting-app .
+
+# Run the container (Access at http://localhost:5000)
+docker run -p 5000:5000 greeting-app
+```
+
+### 3. Kubernetes Deployment
+Deploy the application to a Kubernetes cluster:
+
+```bash
+# 1. Create the namespace and resources
+kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+
+# 2. Verify the deployment
+kubectl get pods -n greeting-app
+```
