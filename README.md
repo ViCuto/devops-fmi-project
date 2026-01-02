@@ -64,8 +64,6 @@ The application is containerized using Docker with a focus on security and build
     * `requirements-dev.txt`: Testing and linting tools (pytest, flake8, black, bandit).
     * *Benefit:* The final Docker image installs **only** production dependencies, keeping the artifact lightweight and clean.
 * **Layer Caching:** `requirements.txt` is copied and installed *before* the source code to leverage Docker layer caching and speed up builds.
-### Build Optimization
-* **Layer Caching:** The build process is optimized to use Docker's layer caching mechanism. The `requirements.txt` file is copied and installed before the application source code. This ensures that dependencies are cached and not re-installed on every build unless the requirements actually change.
 
 ## CI/CD Pipeline
 
