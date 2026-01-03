@@ -3,6 +3,9 @@ name: Fast Feature Check
 on:
   push:
     branches: [ "feature/**" ]
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
   workflow_dispatch:
 
 permissions:
