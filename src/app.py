@@ -14,7 +14,7 @@ GREETINGS = [
     "Bonjour le monde! (French)",
     "Hallo Welt! (German)",
     "Ciao Mondo! (Italian)",
-    "Zdravey, Svyat! (Bulgarian)"
+    "Zdravey, Svyat! (Bulgarian)",
 ]
 
 
