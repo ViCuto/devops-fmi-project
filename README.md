@@ -94,6 +94,11 @@ The project uses **GitHub Actions** to automate testing, security checks, and de
     * **Deploy:** Connects to the Kubernetes cluster and applies the manifests.
     * **Zero-Downtime:** Triggers a rolling update (`kubectl rollout restart`) to gracefully replace old pods with new ones without interrupting service.
 
+### 4. Pipeline Efficiency & Resource Optimization
+To prevent unnecessary resource consumption and reduce CI costs, the pipelines are configured with **Smart Triggers**:
+* **Path Filtering:** Workflows are configured to **ignore** changes to documentation (`**.md`) and local configuration files (`.gitignore`).
+* **Benefit:** Commits that only update the README do not trigger build processes or test suites, saving GitHub Actions compute minutes.
+
  ## Kubernetes Deployment
 
 The application runs on a Kubernetes cluster with a configuration designed for high availability, isolation, and stability.
