@@ -17,18 +17,17 @@ The application logic is intentionally minimal. This allows the project to focus
 
 ## Branching Strategy & Workflow
 
-The project follows a **Structured Gitflow Strategy** with strictly enforced **Branch Protection Rules** on key branches.
+The project follows a **Structured Gitflow Strategy** with **Branch Protection Rules** to ensure code quality and stability.
 
 ### 1. Branch Structure
-* **`main` (Production):** The stable branch deployed to the Kubernetes cluster. Merging here triggers the **CD Pipeline**.
-* **`dev` (Integration):** The staging branch where new features are combined and tested before reaching production.
+* **`main` (Production):** The stable branch deployed to the Kubernetes cluster. **Protected:** Direct pushes are blocked; changes require a Pull Request.
+* **`dev` (Integration):** The staging branch where new features are combined and tested. **Protected:** CI checks must pass before merging.
 * **`feature/**` (Development):** Temporary branches used for developing specific tasks.
 
-### 2. Quality Gates (Main & Dev)
-To ensure stability, the following **Protection Rules** are enforced on **both** the `main` and `dev` branches:
-* **Direct Pushes Blocked:** Committing directly to these branches is disabled to prevent accidental breaking changes.
-* **Required Status Checks:** The **CI Pipeline** (`ci-pr.yaml`) must pass successfully (Tests + Security Scans) before the Pull Request can be merged.
-* **Structured Workflow:** Even as a solo project, using Pull Requests enforces a clean commit history and ensures that no code reaches production without passing the automated gates.
+### 2. Quality Gates
+To ensure stability, we enforce **Protection Rules** on both `dev` and `main` branches:
+* **Required Status Checks:** The **CI Pipeline** (`ci-pr.yaml`) must pass successfully (Tests + Security Scans) before merging.
+* **Pull Request Flow:** Direct commits are disabled to ensure all code is reviewed.
 
 ### 3. Workflow Diagram
 The workflow travels linearly from development to deployment.
@@ -94,6 +93,11 @@ The project uses **GitHub Actions** to automate testing, security checks, and de
     * **Build & Push:** Builds the Docker image and pushes it to Docker Hub with version tags (`sha` and `latest`).
     * **Deploy:** Connects to the Kubernetes cluster and applies the manifests.
     * **Zero-Downtime:** Triggers a rolling update (`kubectl rollout restart`) to gracefully replace old pods with new ones without interrupting service.
+
+### 4. Pipeline Efficiency & Resource Optimization
+To prevent unnecessary resource consumption and reduce CI costs, the pipelines are configured with **Smart Triggers**:
+* **Path Filtering:** Workflows are configured to **ignore** changes to documentation (`**.md`) and local configuration files (`.gitignore`).
+* **Benefit:** Commits that only update the README do not trigger build processes or test suites, saving GitHub Actions compute minutes.
 
  ## Kubernetes Deployment
 
