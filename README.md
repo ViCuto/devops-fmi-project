@@ -17,17 +17,18 @@ The application logic is intentionally minimal. This allows the project to focus
 
 ## Branching Strategy & Workflow
 
-The project follows a **Structured Gitflow Strategy** with **Branch Protection Rules** to ensure code quality and stability.
+The project follows a **Structured Gitflow Strategy** with strictly enforced **Branch Protection Rules** on key branches.
 
 ### 1. Branch Structure
-* **`main` (Production):** The stable branch deployed to the Kubernetes cluster. **Protected:** Direct pushes are blocked; changes require a Pull Request.
-* **`dev` (Integration):** The staging branch where new features are combined and tested. **Protected:** CI checks must pass before merging.
+* **`main` (Production):** The stable branch deployed to the Kubernetes cluster. Merging here triggers the **CD Pipeline**.
+* **`dev` (Integration):** The staging branch where new features are combined and tested before reaching production.
 * **`feature/**` (Development):** Temporary branches used for developing specific tasks.
 
-### 2. Quality Gates
-To ensure stability, we enforce **Protection Rules** on both `dev` and `main` branches:
-* **Required Status Checks:** The **CI Pipeline** (`ci-pr.yaml`) must pass successfully (Tests + Security Scans) before merging.
-* **Pull Request Flow:** Direct commits are disabled to ensure all code is reviewed.
+### 2. Quality Gates (Main & Dev)
+To ensure stability, the following **Protection Rules** are enforced on **both** the `main` and `dev` branches:
+* **Direct Pushes Blocked:** Committing directly to these branches is disabled to prevent accidental breaking changes.
+* **Required Status Checks:** The **CI Pipeline** (`ci-pr.yaml`) must pass successfully (Tests + Security Scans) before the Pull Request can be merged.
+* **Structured Workflow:** Even as a solo project, using Pull Requests enforces a clean commit history and ensures that no code reaches production without passing the automated gates.
 
 ### 3. Workflow Diagram
 The workflow travels linearly from development to deployment.
