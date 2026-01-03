@@ -122,6 +122,14 @@ The application runs on a Kubernetes cluster with a configuration designed for h
 | **Container Security** | Trivy (Vulnerability Scanner) |
 | **Quality Assurance** | Pytest (Unit Tests), Black, Flake8 |
 
+## Future Improvements
+
+The current application is designed as a **stateless** service. The roadmap for evolving it into a production-grade enterprise solution includes:
+
+* **Database Integration (PostgreSQL):** Move to a **stateful architecture** to store greetings dynamically instead of hardcoding them.
+* **Data Persistence:** Use Kubernetes **PersistentVolumes (PVC)** to ensure data integrity and prevent data loss during pod restarts.
+* **Database Migrations:** Implement automated schema management (using tools like **Alembic**) to handle structural database changes as code within the pipeline.
+
 ## How to Run
 
 ### 1. Running from Source
