@@ -9,12 +9,12 @@ from flask import Flask
 app = Flask(__name__)
 
 GREETINGS = [
-    "Hello, World! (English)",
-    "¡Hola Mundo! (Spanish)",
-    "Bonjour le monde! (French)",
-    "Hallo Welt! (German)",
-    "Ciao Mondo! (Italian)",
-    "Zdravey, Svyat! (Bulgarian)",
+    "Hello, World!",
+    "¡Hola Mundo!",
+    "Bonjour le monde!",
+    "Hallo Welt!",
+    "Ciao Mondo!",
+    "Zdravey, Svyat!",
 ]
 
 
